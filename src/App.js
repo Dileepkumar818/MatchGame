@@ -2,6 +2,7 @@ import {Component} from 'react'
 import TabItem from './Component/TabItem/index'
 import MatchItem from './Component/MatchItem/index'
 import GameScoreBanner from './Component/GameScoreBanner/index'
+import Header from './Component/Header/index'
 import './App.css'
 
 // These are the lists used in the application. You can move them to any component needed.
@@ -271,19 +272,26 @@ class App extends Component {
 
   checkMatch = id => {
     const {imgMatch} = this.state
-    const sortedList = imagesList.sort(() => Math.random() - 0.5)
     if (imgMatch.id === id) {
-      this.setState(prev => ({score: prev.score + 1, imgMatch: sortedList[0]}))
+      this.generateRandomImage()
     } else {
       this.setState(prev => ({isGameover: !prev.isGameover}))
       clearInterval(this.timerId)
     }
   }
 
+  generateRandomImage = () => {
+    const index = Math.floor(Math.random() * imagesList.length)
+    const imgMatch = imagesList[index]
+    const {score} = this.state
+    this.setState({imgMatch, score: score + 1})
+  }
+
   resetGame = () => {
+    const listImg = [...listImages]
     this.setState({
       activeTabId: tabsList[0].tabId,
-      imgMatch: imagesList[0],
+      imgMatch: listImg[0],
       time: 60,
       score: 0,
       isGameover: false,
@@ -306,34 +314,7 @@ class App extends Component {
     const thumbnails = listImages.filter(each => each.category === activeTabId)
     return (
       <div className="bg-game">
-        <div className="bg-navbar">
-          <ul className="logo-container">
-            <li>
-              <img
-                src="https://assets.ccbp.in/frontend/react-js/match-game-website-logo.png"
-                alt="website logo"
-                className="game-logo"
-              />
-            </li>
-          </ul>
-          <ul className="score-board">
-            <li className="score-container">
-              <p>
-                Score: <span className="score">{score}</span>
-              </p>
-            </li>
-            <li className="timer-container">
-              <img
-                src="https://assets.ccbp.in/frontend/react-js/match-game-timer-img.png"
-                alt="timer"
-                className="timer-image"
-              />
-            </li>
-            <li className="timer-container">
-              <p className="timer">{time} Sec</p>
-            </li>
-          </ul>
-        </div>
+        <Header score={score} time={time} />
         <div>
           {!isGameover ? (
             <div className="bg-img">
